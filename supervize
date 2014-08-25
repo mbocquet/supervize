@@ -1,0 +1,61 @@
+#!/bin/bash
+# Dependencies :
+# ping, netcat (nc)
+if [ $# -lt 1 ]
+then
+	printf "Syntax : $(basename $0) <file> [ports list]\n"
+	printf "<file> contains lines of pairs devices ip\n"
+	printf "like :\n"
+	printf "mydeviceinDNS mydeviceinDNS\n"
+	printf "mydevicenotinDNS 10.45.23.12\n"
+	printf "[ports list] can be either 'ssh http' or '22 80'\n"
+	exit 1
+else
+	FILE=$1
+	shift
+	PORTS=$*
+fi
+
+# Colors
+green=$(tput setaf 2)
+red=$(tput setaf 1)
+normal=$(tput setaf 7)
+
+ok="✪"
+failed="☢"
+
+# header
+HEADERS="Device up $PORTS"
+printf "%-22s%-5s%-5s%-5s%-5s%-5s\n" $HEADERS
+
+while read DEVICE IP
+do
+	case $DEVICE in
+	# if ou device line is empty or contains only spaces print only a newline
+	''|\s)
+		printf "\n"
+		continue
+		;;
+	# if our device begins with an hashtag, we ignore it, its a comment !
+	\#*)
+		continue
+		;;
+	esac
+	printf "%-22s" $DEVICE
+	if ping -c 1 -W 2 $IP >/dev/null 2>&1
+	then
+		printf "${green}%-7s${normal}" "$ok"
+	else
+		printf "${red}%-7s${normal}" "$failed"
+	fi
+	for PORT in $PORTS
+	do
+		if nc -z -w 1 $IP $PORT >/dev/null 2>&1
+		then
+			printf "${green}%-7s${normal}" "$ok"
+		else
+			printf "${red}%-7s${normal}" "$failed"
+		fi
+	done
+	printf "\n"
+done<$FILE
