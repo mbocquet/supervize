@@ -31,7 +31,8 @@ printf "%-22s%-5s%-5s%-5s%-5s%-5s\n" $HEADERS
 while read DEVICE IP
 do
 	case $DEVICE in
-	# if ou device line is empty or contains only spaces print only a newline
+	# if our device line is empty or contains only spaces then print only
+	# a newline
 	''|\s)
 		printf "\n"
 		continue
