@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/dash
 # Dependencies :
 # ping, netcat (nc)
 if [ $# -lt 1 ]
