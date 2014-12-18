@@ -1,6 +1,11 @@
 #!/bin/sh
+
+# 'Supervize'. Keep track of your devices infos.
+# Author: Mathias Bocquet <mbocquet@sekoya.org>
+
 # Dependencies :
 # ping, netcat (nc)
+
 if [ $# -lt 1 ]
 then
 	printf "Syntax : $(basename $0) <file> [ports list]\n"
