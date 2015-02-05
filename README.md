@@ -14,9 +14,9 @@ Now if you want to monitor many devices, create a file for example devices.super
 
 <pre>
 device1		10.11.12.13
-device2		10.45.46.47
+device2		device2
 ...			...
-deviceN		10.20.21.22
+deviceN		deviceN.domain.tld
 </pre>
 
 And call supervize with the file and the ports you want to check
