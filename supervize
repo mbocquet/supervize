@@ -1,25 +1,29 @@
 #!/bin/sh
 
 # 'Supervize'. Keep track of your devices infos.
-# Copyright © 2013-2015 Mathias Bocquet <mbocquet@sekoya.org>
+# Copyright © 2013-2016 Mathias Bocquet <mbocquet@sekoya.org>
 
 # Dependencies :
 # ping, netcat (nc)
 
 if [ $# -lt 1 ]
 then
-	printf "Syntax : $(basename $0) <file> [ports list]\n"
-	printf "<file> contains lines of pairs devices ip\n"
-	printf "like :\n"
-	printf "mydeviceinDNS mydeviceinDNS\n"
-	printf "mydevicenotinDNS 10.45.23.12\n"
-	printf "[ports list] can be either 'ssh http' or '22 80'\n"
-	exit 1
+    printf "Syntax : $(basename $0) <file> [ports list]\n"
+    printf "<file> contains lines of pairs devices ip\n"
+    printf "like :\n"
+    printf "mydeviceinDNS mydeviceinDNS\n"
+    printf "mydevicenotinDNS 10.45.23.12\n"
+    printf "[ports list] can be either 'ssh http' or '22 80'\n"
+    exit 1
 else
-	FILE=$1
-	shift
-	PORTS=$*
+    FILE=$1
+    shift
+    PORTS=$*
+    NBPORTS_TOCHECK=$#
 fi
+
+# DEBUG
+printf "NBPORTS_TOCHECK=$NBPORTS_TOCHECK\n"
 
 # Colors
 green=$(tput setaf 2)
@@ -29,39 +33,45 @@ normal=$(tput setaf 7)
 ok="✪"
 failed="☢"
 
-# header
-HEADERS="Device up $PORTS"
-printf "%-22s%-5s%-5s%-5s%-5s%-5s\n" $HEADERS
+ICMP_TIMEOUT=1
+PORT_TIMEOUT=1
+
+printf "%-22s%-6s" "Device" "up"
+for PORT in $PORTS
+do
+    printf "%-6s" "$PORT"
+done
+printf "\n"
 
 while read DEVICE IP
 do
-	case $DEVICE in
-	# if our device line is empty or contains only spaces then print only
-	# a newline
-	''|\s)
-		printf "\n"
-		continue
-		;;
-	# if our device begins with an hashtag, we ignore it, its a comment !
-	\#*)
-		continue
-		;;
-	esac
-	printf "%-22s" $DEVICE
-	if ping -c 1 -W 2 $IP >/dev/null 2>&1
-	then
-		printf "${green}%-7s${normal}" "$ok"
-	else
-		printf "${red}%-7s${normal}" "$failed"
-	fi
-	for PORT in $PORTS
-	do
-		if nc -z -w 1 $IP $PORT >/dev/null 2>&1
-		then
-			printf "${green}%-7s${normal}" "$ok"
-		else
-			printf "${red}%-7s${normal}" "$failed"
-		fi
-	done
-	printf "\n"
+    case $DEVICE in
+    # if our device line is empty or contains only spaces then print only
+    # a newline
+    ''|\s)
+        printf "\n"
+        continue
+        ;;
+    # if our device begins with a hash, we ignore it, its a comment !
+    \#*)
+        continue
+        ;;
+    esac
+    printf "%-22s" $DEVICE
+    if ping -c 1 -W ${ICMP_TIMEOUT} $IP >/dev/null 2>&1
+    then
+        printf "${green}%-8s${normal}" "$ok"
+    else
+        printf "${red}%-8s${normal}" "$failed"
+    fi
+    for PORT in $PORTS
+    do
+        if nc -z -w ${PORT_TIMEOUT} $IP $PORT >/dev/null 2>&1
+        then
+            printf "${green}%-8s${normal}" "$ok"
+        else
+            printf "${red}%-8s${normal}" "$failed"
+        fi
+    done
+    printf "\n"
 done<$FILE
