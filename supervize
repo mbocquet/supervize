@@ -19,11 +19,7 @@ else
     FILE=$1
     shift
     PORTS=$*
-    NBPORTS_TOCHECK=$#
 fi
-
-# DEBUG
-printf "NBPORTS_TOCHECK=$NBPORTS_TOCHECK\n"
 
 # Colors
 green=$(tput setaf 2)
