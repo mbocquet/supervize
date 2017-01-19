@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # 'Supervize'. Keep track of your devices infos.
-# Copyright © 2013-2016 Mathias Bocquet <mbocquet@sekoya.org>
+# Copyright © 2013-2017 Mathias Bocquet <mbocquet@sekoya.org>
 
 # Dependencies :
 # ping, netcat (nc)
@@ -26,8 +26,18 @@ green=$(tput setaf 2)
 red=$(tput setaf 1)
 normal=$(tput setaf 7)
 
-ok="✪"
-failed="☢"
+#ok="✪"     # star
+#failed="☢" # radioactivity
+#ok="●"     # full circle
+#failed="●" # full circle
+
+# ok is brighter than failed
+ok="■"     # big filled square (u2b1b)
+failed="□" # big square (u2b1c)
+
+# failed is brighter than ok
+#ok="□"     # big filled square (u2b1b)
+#failed="■" # big square (u2b1c)
 
 ICMP_TIMEOUT=1
 PORT_TIMEOUT=1
