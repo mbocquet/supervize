@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # 'Supervize'. Keep track of your devices infos.
-# Copyright © 2013-2018 Mathias Bocquet <mbocquet@sekoya.org>
+# Copyright © 2013-2021 Mathias Bocquet <mbocquet@sekoya.org>
 
 # Dependencies :
 # ping, netcat (nc)
@@ -43,7 +43,7 @@ failed="□" # big square (u2b1c)
 ICMP_TIMEOUT=1
 PORT_TIMEOUT=1
 
-printf "%-22s%-6s" "Device" "up"
+printf "%-16s %-40s%-6s" "Device" "ipaddr" "up"
 for PORT in $PORTS
 do
     printf "%-6s" "$PORT"
@@ -64,7 +64,7 @@ do
         continue
         ;;
     esac
-    printf ${reset}"%-22s" $DEVICE
+    printf ${reset}"%-16s %-40s" $DEVICE $IP
     if ping -c 1 -W ${ICMP_TIMEOUT} $IP >/dev/null 2>&1
     then
         printf "${green}%-8s" "$ok"
@@ -80,5 +80,5 @@ do
             printf "${red}%-8s" "$failed"
         fi
     done
-    printf "\n"
+    printf ${reset}"\n"
 done<$FILE
