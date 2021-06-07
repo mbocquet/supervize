@@ -4,7 +4,7 @@
 # Copyright © 2013-2021 Mathias Bocquet <mbocquet@sekoya.org>
 
 # Dependencies :
-# ping, netcat (nc)
+# iputils-ping (ping), netcat (nc)
 
 if [ $# -lt 1 ]
 then
@@ -43,23 +43,32 @@ failed="□" # big square (u2b1c)
 ICMP_TIMEOUT=1
 PORT_TIMEOUT=1
 
-printf "%-16s %-40s%-6s" "Device" "ipaddr" "up"
+printf "%-16s %-40s%-6s" "Device" "fqdn/ipaddr" "up"
+
 for PORT in $PORTS
 do
     printf "%-6s" "$PORT"
 done
 printf "\n"
 
+printf "%-16s %-40s%-6s" "----------------" "---------------------------------------" "-----"
+
+for PORT in $PORTS
+do
+    printf "%-6s" "-----"
+done
+printf "\n"
+
 while read DEVICE IP
 do
     case $DEVICE in
-    # if our device line is empty or contains only spaces then print only
+    # treat spaces and empty lines as separator
     # a newline
     ''|\s)
         printf "\n"
         continue
         ;;
-    # if our device begins with a hash, we ignore it, its a comment !
+    # ignore comment lines
     \#*)
         continue
         ;;
